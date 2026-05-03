@@ -1,0 +1,17 @@
+{
+  "$schema": "https://glama.ai/mcp/schemas/server.json",
+  "maintainers": [
+    "cryptorugmuncher"
+  ],
+  "name": "Rug Munch Intelligence x402 Gateway (Base)",
+  "description": "10 crypto security & analytics tools via x402 micropayments on Base. Contract audit, wallet profiling, rug detection, smart money tracking, sentiment analysis. From $0.005/call with free trials.",
+  "server": {
+    "url": "https://x402-base.cryptorugmuncher.workers.dev",
+    "transport": "http",
+    "capabilities": {
+      "tools": {
+        "listChanged": true
+      }
+    }
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "name": "Rug Munch Intelligence x402 Gateway (Base)",
+  "description": "10 crypto security & analytics tools via x402 micropayments on Base",
+  "repository": {
+    "type": "github",
+    "url": "https://github.com/Rug-Munch-Media-LLC/x402-gateway-base"
+  },
+  "mcpServers": {
+    "rugmunch-base": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "mcp-remote@latest",
+        "https://x402-base.cryptorugmuncher.workers.dev/.well-known/x402"
+      ],
+      "env": {}
+    }
+  }
+}
