@@ -57,3 +57,5 @@ We're a solo developer building tools to stop crypto scams. 100% of revenue fund
 - **Gateway:** https://x402-base.cryptorugmuncher.workers.dev
 - **Website:** https://rugmunch.io
 - **Twitter:** https://x.com/CryptoRugMunch
+
+[![smithery badge](https://smithery.ai/badge/cryptorugmuncher/rugmunch-base)](https://smithery.ai/servers/cryptorugmuncher/rugmunch-base)
