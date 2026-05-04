@@ -1,17 +1,15 @@
 {
-  "$schema": "https://glama.ai/mcp/schemas/server.json",
-  "maintainers": [
-    "cryptorugmuncher"
-  ],
-  "name": "Rug Munch Intelligence x402 Gateway (Base)",
-  "description": "10 crypto security & analytics tools via x402 micropayments on Base. Contract audit, wallet profiling, rug detection, smart money tracking, sentiment analysis. From $0.005/call with free trials.",
-  "server": {
-    "url": "https://x402-base.cryptorugmuncher.workers.dev",
-    "transport": "http",
-    "capabilities": {
-      "tools": {
-        "listChanged": true
-      }
+    "$schema": "https://glama.ai/mcp/schemas/server.json",
+    "maintainers": ["cryptorugmuncher"],
+    "name": "Rug Munch Intelligence x402 Gateway (Base)",
+    "description": "175 crypto security & analytics tools via x402 micropayments on Base. 21 RMI tools (contract audit, rug detection, wallet profiling, social analysis) + 154 MCP tools (DexScreener, Jupiter, Birdeye, GMGN, Arkham, Nansen, CoinGecko, DeFiLlama, and 20 more). From $0.01/call with free trials. No API keys needed.",
+    "server": {
+        "url": "https://x402-base.cryptorugmuncher.workers.dev",
+        "transport": "http",
+        "capabilities": {
+            "tools": {
+                "listChanged": true
+            }
+        }
     }
-  }
 }
