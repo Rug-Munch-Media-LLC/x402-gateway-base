@@ -4,7 +4,7 @@
     "cryptorugmuncher"
   ],
   "name": "Rug Munch Intelligence x402 Gateway (Base)",
-  "description": "175 crypto security & analytics tools via x402 micropayments on Base. 21 RMI tools (contract audit, rug detection, wallet profiling, social analysis) + 154 MCP tools (DexScreener, Jupiter, Birdeye, GMGN, Arkham, Nansen, CoinGecko, DeFiLlama, and 20 more). From $0.01/call with free trials. No API keys needed. Brand: detective in gold fedora, purple coat, cyan glowing glasses.",
+  "description": "175 crypto security and analytics tools via x402 micropayments. 21 RMI tools + 154 MCP tools across 28 services. From $0.01/call. 1 free trial total. Auto-refund guarantee. Brand: detective in gold fedora, purple coat, cyan glasses.",
   "server": {
     "url": "https://x402-base.cryptorugmuncher.workers.dev",
     "transport": "http",
