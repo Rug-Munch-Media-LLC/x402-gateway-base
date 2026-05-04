@@ -1,14 +1,14 @@
 {
     "name": "Rug Munch Intelligence x402 Gateway (Base)",
-    "description": "175 crypto security & analytics tools via x402 micropayments. 21 RMI security tools + 154 MCP data tools across 28 services. Auto-refund guarantee. Free trials.",
+    "description": "21 crypto security tools + 154 MCP tools via x402 micropayments on Base. Auto-refund guarantee. $0.01-$0.15/call.",
     "repository": {
         "type": "github",
-        "url": "https://github.com/Rug-Munch-Media-LLC/x402-gateway-base"
+        "url": "https://github.com/Rug-Munch-Media-LLC/rugmuncher-backend"
     },
     "mcpServers": {
         "rugmunch-base": {
             "command": "npx",
-            "args": ["-y", "mcp-remote@latest", "https://x402-base.cryptorugmuncher.workers.dev/.well-known/x402"],
+            "args": ["-y", "mcp-remote@latest", "https://x402-base.cryptorugmuncher.workers.dev/mcp"],
             "env": {}
         }
     }
