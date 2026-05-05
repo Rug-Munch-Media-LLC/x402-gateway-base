@@ -2347,12 +2347,25 @@ async function handleRequest(request: Request, env: Env): Promise<Response> {
     if (request.method === "POST") {
       try {
         const body = await request.json() as any;
+        const respond = (result: any) => Response.json({ jsonrpc: "2.0", id: body.id, ...result });
+        
+        if (body.method === "initialize") {
+          return respond({ result: {
+            protocolVersion: "2025-03-26",
+            capabilities: { tools: { listChanged: true } },
+            serverInfo: { name: env.ORGANIZATION, version: "2.0.0" }
+          }});
+        }
         if (body.method === "tools/list") {
+          const normalizeSchema = (p: any) => {
+            if (!p || typeof p !== "object" || Object.keys(p).length === 0) return { type: "object", properties: {} };
+            return { type: "object", properties: p.properties || {}, required: p.required || [] };
+          };
           const mcpTools = Object.entries(allMcp).flatMap(([svc, ts]) =>
             (ts as any[]).map(t => ({
               name: `${svc}_${t.name}`,
               description: t.description || "",
-              inputSchema: t.parameters || { type: "object", properties: {} }
+              inputSchema: normalizeSchema(t.parameters)
             }))
           );
           const rmiTools = Object.values(RMI_TOOLS).map(t => ({
@@ -2367,27 +2380,30 @@ async function handleRequest(request: Request, env: Env): Promise<Response> {
               required: ["address"]
             }
           }));
-          return Response.json({
-            jsonrpc: "2.0",
-            id: body.id,
-            result: {
-              tools: [...rmiTools, ...mcpTools],
-              _meta: { totalTools: rmiTools.length + mcpTools.length }
-            }
-          });
+          return respond({ result: {
+            tools: [...rmiTools, ...mcpTools],
+            _meta: { totalTools: rmiTools.length + mcpTools.length }
+          }});
         }
-        if (body.method === "initialize") {
-          return Response.json({
-            jsonrpc: "2.0",
-            id: body.id,
-            result: {
-              protocolVersion: "2025-03-26",
-              capabilities: { tools: { listChanged: true } },
-              serverInfo: { name: env.ORGANIZATION, version: "2.0.0" }
-            }
-          });
+        if (body.method === "resources/list") {
+          return respond({ result: { resources: [] }});
         }
-      } catch {}
+        if (body.method === "prompts/list") {
+          return respond({ result: { prompts: [] }});
+        }
+        if (body.method === "ping") {
+          return respond({ result: {} });
+        }
+        return Response.json({
+          jsonrpc: "2.0", id: body.id,
+          error: { code: -32601, message: `Method not found: ${body.method}` }
+        }, { status: 400 });
+      } catch (e: any) {
+        return Response.json({
+          jsonrpc: "2.0", id: null,
+          error: { code: -32700, message: "Parse error", data: e.message }
+        }, { status: 400 });
+      }
     }
     // GET - summary for humans
     const svc = Object.entries(allMcp).map(([n, ts]) => ({ name: n, toolCount: (ts as any[]).length }));
