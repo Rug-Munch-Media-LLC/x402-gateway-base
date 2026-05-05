@@ -2361,11 +2361,28 @@ async function handleRequest(request: Request, env: Env): Promise<Response> {
             if (!p || typeof p !== "object" || Object.keys(p).length === 0) return { type: "object", properties: {} };
             return { type: "object", properties: p.properties || {}, required: p.required || [] };
           };
+          const outputSchema = {
+            type: "object",
+            properties: {
+              tool: { type: "string", description: "Tool name" },
+              data: { type: "object", description: "Tool response data" },
+              status: { type: "string", description: "Response status" }
+            },
+            required: ["tool", "data"]
+          };
+          const annotations = {
+            readOnlyHint: false,
+            destructiveHint: false,
+            idempotentHint: false,
+            openWorldHint: true
+          };
           const mcpTools = Object.entries(allMcp).flatMap(([svc, ts]) =>
             (ts as any[]).map(t => ({
               name: `${svc}_${t.name}`,
               description: t.description || "",
-              inputSchema: normalizeSchema(t.parameters)
+              inputSchema: normalizeSchema(t.parameters),
+              outputSchema,
+              annotations
             }))
           );
           const rmiTools = Object.values(RMI_TOOLS).map(t => ({
@@ -2378,7 +2395,9 @@ async function handleRequest(request: Request, env: Env): Promise<Response> {
                 chain: { type: "string", description: "Blockchain network", default: env.NETWORK.includes("solana") ? "solana" : "base" }
               },
               required: ["address"]
-            }
+            },
+            outputSchema,
+            annotations
           }));
           return respond({ result: {
             tools: [...rmiTools, ...mcpTools],
