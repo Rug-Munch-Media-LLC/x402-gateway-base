@@ -2494,6 +2494,21 @@ async function handleRequest(request: Request, env: Env): Promise<Response> {
       return Response.json(result);
     }
 
+    // Trial mode: if tool has free trials, execute without payment
+    if (tool.trialFree > 0) {
+      let body: any = {};
+      if (tool.method === "POST") {
+        try { const raw = await request.text(); if (raw) body = JSON.parse(raw); } catch {}
+      } else {
+        for (const [k, v] of url.searchParams.entries()) body[k] = v;
+      }
+      const result = await executeToolDirect(toolName, body, url.searchParams);
+      result.trial = true;
+      result.trialsRemaining = tool.trialFree;
+      result.message = `Free trial (${tool.trialFree} remaining). Upgrade to paid for unlimited access.`;
+      return Response.json(result);
+    }
+
     // No payment — return 402 with proper PAYMENT-REQUIRED header (x402 SDK compatible)
     const networkForSdk = env.NETWORK === "base" ? "eip155:8453" : env.NETWORK;
     const paymentRequired = JSON.stringify({
@@ -2506,13 +2521,13 @@ async function handleRequest(request: Request, env: Env): Promise<Response> {
         payTo: env.PAY_TO,
         maxTimeoutSeconds: 60,
         extra: env.NETWORK.includes("solana") ? {
-          feePayer: env.PAY_TO
+          feePayer: "2wKupLR9q6wXYppw8Gr2NvWxKBUqm4PPJKkQfoxHDBg4"
         } : {
-          name: "USD Coin",
-          version: "2",
+          name: "x402",
+          version: "1",
           domain: {
-            name: "USD Coin",
-            version: "2",
+            name: "x402",
+            version: "1",
             chainId: 8453,
             verifyingContract: env.PAY_TO
           }
