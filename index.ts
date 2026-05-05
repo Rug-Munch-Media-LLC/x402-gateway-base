@@ -2370,19 +2370,13 @@ async function handleRequest(request: Request, env: Env): Promise<Response> {
             },
             required: ["tool", "data"]
           };
-          const annotations = {
-            readOnlyHint: false,
-            destructiveHint: false,
-            idempotentHint: false,
-            openWorldHint: true
-          };
           const mcpTools = Object.entries(allMcp).flatMap(([svc, ts]) =>
             (ts as any[]).map(t => ({
               name: `${svc}_${t.name}`,
               description: t.description || "",
               inputSchema: normalizeSchema(t.parameters),
               outputSchema,
-              annotations
+              annotations: { title: t.description || `${svc}_${t.name}` }
             }))
           );
           const rmiTools = Object.values(RMI_TOOLS).map(t => ({
@@ -2397,7 +2391,7 @@ async function handleRequest(request: Request, env: Env): Promise<Response> {
               required: ["address"]
             },
             outputSchema,
-            annotations
+            annotations: { title: t.description || t.name }
           }));
           return respond({ result: {
             tools: [...rmiTools, ...mcpTools],
