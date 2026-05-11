@@ -65,6 +65,18 @@ const RMI_TOOLS: Record<string, ToolDef> = {
   rug_pull_predictor: { name: "rug_pull_predictor", description: "Pre-rug detection system - analyzes contract patterns, holder behavior, and liquidity metrics to predict rug probability. ML-based scoring using historical rug data. Returns rug probability percentage and warning signals.", price: "$0.10", priceAtomic: "100000", category: "security", trialFree: 0, method: "POST" },
   airdrop_finder: { name: "airdrop_finder", description: "Airdrop eligibility checker - analyzes wallet activity against known airdrop criteria. Tracks protocol interactions, volume thresholds, and snapshot timing. Returns eligible airdrops and qualification status.", price: "$0.05", priceAtomic: "50000", category: "intelligence", trialFree: 2, method: "POST" },
   mev_protection: { name: "mev_protection", description: "MEV protection checker - analyzes pending mempool for sandwich attack risk, calculates optimal slippage, suggests safe transaction routing. Protects against front-running and back-running.", price: "$0.08", priceAtomic: "80000", category: "security", trialFree: 0, method: "POST" },
+
+  // New tools - backed by real endpoints
+  whale_scan: { name: "whale_scan", description: "Scan any token for whale concentration and large-holder risk. Returns whale count, top-5/top-10 concentration %, risk level, and whale wallet details.", price: "$0.03", priceAtomic: "30000", category: "intelligence", trialFree: 3, method: "POST" },
+  whale_profile: { name: "whale_profile", description: "Build a behavioral profile and influence score for any wallet. Shows trading patterns, token preferences, holding periods, and network connections.", price: "$0.05", priceAtomic: "50000", category: "intelligence", trialFree: 2, method: "POST" },
+  sniper_detect: { name: "sniper_detect", description: "Analyze token launches for bot rings, coordinated buys, and insider patterns. Detects Jito bundles, funding sources, and calculates insider probability.", price: "$0.08", priceAtomic: "80000", category: "intelligence", trialFree: 1, method: "POST" },
+  syndicate_scan: { name: "syndicate_scan", description: "Scan known syndicate contracts for holder distribution and coordinated activity. Returns holder count, top wallets, concentration metrics, and network alerts.", price: "$0.08", priceAtomic: "80000", category: "intelligence", trialFree: 1, method: "GET" },
+  syndicate_track: { name: "syndicate_track", description: "Track a wallet through the syndicate network. Returns connection depth, fund flow relationships, and coordinated activity flags.", price: "$0.10", priceAtomic: "100000", category: "intelligence", trialFree: 1, method: "POST" },
+  wallet_graph: { name: "wallet_graph", description: "Map the full syndicate wallet graph with fund flow relationships. Returns nodes, edges, cluster assignments, and influence scores.", price: "$0.10", priceAtomic: "100000", category: "intelligence", trialFree: 0, method: "GET" },
+  profile_flip: { name: "profile_flip", description: "Detect tokens that rebranded after a rug pull. Identifies name/symbol/logo changes, tracks the original token, and scores relaunch risk.", price: "$0.03", priceAtomic: "30000", category: "security", trialFree: 3, method: "GET" },
+
+  fresh_pair: { name: "fresh_pair", description: "Scan newly created pairs for wash trading — detect self-buying, circular volume, fake liquidity, and bot-driven initial trading.", price: "$0.03", priceAtomic: "30000", category: "security", trialFree: 3, method: "GET" },
+  clone_detect: { name: "clone_detect", description: "Find copycat tokens — tokens mimicking established projects with near-identical names, symbols, or descriptions. Returns similarity score and original token.", price: "$0.02", priceAtomic: "20000", category: "security", trialFree: 3, method: "GET" },
 };
 
 let MCP_TOOLS: Record<string, any[]> = {};
@@ -85,7 +97,7 @@ async function fetchMCPTools(env: Env): Promise<Record<string, any[]>> {
 
 // ── Direct Tool Execution (No Backend Proxy) ─────────────────
 
-async function executeToolDirect(toolName: string, body: any, urlParams: URLSearchParams): Promise<any> {
+async function executeToolDirect(toolName: string, body: any, urlParams: URLSearchParams, env?: Env): Promise<any> {
   const address = body?.address || body?.token_address || urlParams.get("address") || "";
   const chain = body?.chain || urlParams.get("chain") || "solana";
   const urlParam = body?.url || urlParams.get("url") || "";
@@ -158,6 +170,31 @@ async function executeToolDirect(toolName: string, body: any, urlParams: URLSear
     return await executeAirdropFinder(body?.wallet || body?.address || "", body?.chain || "base");
   } else if (toolName === "mev_protection") {
     return await executeMevProtection(body?.tx_hash || "", body?.token_address || "", body?.chain || "base", body?.slippage || 1);
+  // New tools - proxy to backend endpoints
+  } else if (toolName === "whale_scan" || toolName === "whale_profile" || toolName === "sniper_detect") {
+    const ep = {whale_scan: "whale-scan", whale_profile: "whale-profile", sniper_detect: "sniper-detect"}[toolName];
+    const resp = await fetch(env.BACKEND_API + "/api/v1/helius/" + ep, {
+      method: "POST", headers: {"Content-Type": "application/json"},
+      body: JSON.stringify({ token_address: body?.token_address || body?.address || "", chain: body?.chain || "base" })
+    });
+    return await resp.json();
+  } else if (toolName === "syndicate_scan" || toolName === "wallet_graph") {
+    const ep = {syndicate_scan: "scan", wallet_graph: "wallet-graph"}[toolName];
+    const url = new URL(env.BACKEND_API + "/api/v1/helius/syndicate/" + ep);
+    if (body?.address) url.searchParams.set("address", body.address);
+    if (body?.chain) url.searchParams.set("chain", body.chain);
+    const resp = await fetch(url.toString(), { headers: {"Content-Type": "application/json"} });
+    return await resp.json();
+  } else if (toolName === "syndicate_track") {
+    const resp = await fetch(env.BACKEND_API + "/api/v1/helius/syndicate/track-wallet", { method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify(body || {}) });
+    return await resp.json();
+  } else if (toolName === "profile_flip" || toolName === "fresh_pair" || toolName === "clone_detect") {
+    const epMap: Record<string, string> = {profile_flip: "profile-flips", fresh_pair: "fresh-pairs", clone_detect: "clones"};
+    const url = new URL(env!.BACKEND_API + "/api/v1/scam-finder/" + epMap[toolName]);
+    if (body?.chain) url.searchParams.set("chain", body.chain);
+    if (body?.token_address) url.searchParams.set("token_address", body.token_address);
+    const resp = await fetch(url.toString(), { headers: {"Content-Type": "application/json"} });
+    return await resp.json();
   }
   return { error: "Unknown tool: " + toolName };
 }
@@ -2521,7 +2558,7 @@ async function handleRequest(request: Request, env: Env): Promise<Response> {
       } else {
         for (const [k, v] of url.searchParams.entries()) body[k] = v;
       }
-      const result = await executeToolDirect(toolName, body, url.searchParams);
+      const result = await executeToolDirect(toolName, body, url.searchParams, env);
       return Response.json(result);
     }
 
@@ -2533,7 +2570,7 @@ async function handleRequest(request: Request, env: Env): Promise<Response> {
       } else {
         for (const [k, v] of url.searchParams.entries()) body[k] = v;
       }
-      const result = await executeToolDirect(toolName, body, url.searchParams);
+      const result = await executeToolDirect(toolName, body, url.searchParams, env);
       result.trial = true;
       result.trialsRemaining = tool.trialFree;
       result.message = `Free trial (${tool.trialFree} remaining). Upgrade to paid for unlimited access.`;

@@ -1,0 +1,15 @@
+name = "x402-base"
+main = "index.ts"
+compatibility_date = "2024-04-01"
+
+[vars]
+NETWORK = "eip155:8453"
+NETWORK_NAME = "Base Mainnet"
+FACILITATOR = "https://facilitator.x402.org"
+PAY_TO = "0x1E3AC01d0fdb976179790BDD02823196A92705C9"
+ORGANIZATION = "Rug Munch Intelligence"
+DESCRIPTION = "Crypto security and analytics tools via x402 micropayments"
+BACKEND_MCP = "https://mcp-router.rugmunch.io"
+BACKEND_API = "https://rugmunch.io"
+GW_URL = "https://x402-base.cryptorugmuncher.workers.dev"
+SOLANA_GATEWAY = "https://x402-sol.cryptorugmuncher.workers.dev"

@@ -1,10 +1,10 @@
 # Rug Munch Intelligence - x402 Gateway (Base)
 
-> 33 crypto security & intelligence tools for AI agents. Pay per use, no API keys needed.
+> 44 crypto security & intelligence tools for AI agents. Pay per use, no API keys needed.
 
 ## Overview
 
-Solo developer on a mission to stop crypto scams and protect the community. 33 professional-grade tools available via x402 micropayments on Base. Each tool returns structured JSON data.
+Solo developer on a mission to stop crypto scams and protect the community. 44 professional-grade tools available via x402 micropayments on Base. Each tool returns structured JSON data. Free trials available (1-3 calls per tool).
 
 ## Tools
 
@@ -28,21 +28,82 @@ Solo developer on a mission to stop crypto scams and protect the community. 33 p
 | Market Overview | $0.05 | BTC/ETH prices, chain TVL, trending coins, DeFi stats |
 | Token Deep Dive | $0.10 | CoinGecko + DexScreener + CoinCap multi-source analysis |
 | Chain Health | $0.05 | TVL, protocols, gas fees across 7 chains |
-| **Honeypot Check** | **$0.05** | **Buy/sell simulation - verify you can actually sell** |
-| **Portfolio Tracker** | **$0.10** | **Multi-wallet PnL, allocation, net worth across chains** |
-| **Copy Trade Finder** | **$0.10** | **Find profitable wallets, win rates, positions** |
-| **Token Comparison** | **$0.08** | **Side-by-side token comparison, 2-5 tokens** |
-| **Risk Monitor** | **$0.05** | **Real-time alerts for rugs, whale dumps, contract changes** |
-| **DeFi Yield Scanner** | **$0.08** | **Best APYs, unsustainable yield detection, TVL trends** |
-| **NFT Wash Detector** | **$0.10** | **Fake volume detection, floor manipulation analysis** |
-| **Bridge Security** | **$0.08** | **Cross-chain bridge TVL, exploits, audit status** |
-| **Gas Forecast** | **$0.05** | **Optimal TX times, gas trends across chains** |
+| Honeypot Check | $0.05 | Buy/sell simulation - verify you can actually sell |
+| Portfolio Tracker | $0.10 | Multi-wallet PnL, allocation, net worth across chains |
+| Copy Trade Finder | $0.10 | Find profitable wallets, win rates, positions |
+| Token Comparison | $0.08 | Side-by-side token comparison, 2-5 tokens |
+| Risk Monitor | $0.05 | Real-time alerts for rugs, whale dumps, contract changes |
+| DeFi Yield Scanner | $0.08 | Best APYs, unsustainable yield detection, TVL trends |
+| NFT Wash Detector | $0.10 | Fake volume detection, floor manipulation analysis |
+| Bridge Security | $0.08 | Cross-chain bridge TVL, exploits, audit status |
+| Gas Forecast | $0.05 | Optimal TX times, gas trends across chains |
+| Sniper Alert | $0.03 | New token launches with early buyer tracking |
+| Liquidity Flow | $0.05 | Real-time large swap tracking, whale movement alerts |
+| Rug Pull Predictor | $0.10 | ML-based rug probability prediction from contract patterns |
+| Airdrop Finder | $0.05 | Wallet eligibility checker for upcoming airdrops |
+| MEV Protection | $0.08 | Mempool sandwich attack risk, slippage optimization |
+
+### On-Chain Intelligence
+
+| Tool | Price | Description |
+|------|-------|-------------|
+| Whale Scanner | $0.03 | Token whale concentration analysis - top holders, risk scoring |
+| Whale Profiler | $0.05 | Wallet behavioral profiling - trading patterns, network influence |
+| Sniper Detector | $0.08 | Bot ring detection at token launches - Jito bundles, insider patterns |
+| Syndicate Scanner | $0.08 | Coordinated holder group detection - distribution analysis |
+| Syndicate Tracker | $0.10 | Wallet-to-wallet fund flow tracking through syndicate networks |
+| Wallet Graph | $0.10 | Full wallet relationship mapping - nodes, edges, cluster assignments |
+
+### Scam Detection
+
+| Tool | Price | Description |
+|------|-------|-------------|
+| Profile Flip Detector | $0.03 | Detect tokens rebranded after rug pulls - name/symbol/logo changes |
+| Fresh Pair Scanner | $0.03 | Wash trading detection on new pairs - self-buying, fake volume |
+| Clone Detector | $0.02 | Find copycat tokens mimicking established projects |
 
 ## AI Agent Integration
 
 Agents auto-discover tools via: `https://x402-base.cryptorugmuncher.workers.dev/.well-known/x402`
 
-No API keys needed. Pay per query via x402 micropayments.
+### OpenAI / GPT
+
+```python
+import openai
+client = openai.OpenAI(
+    base_url="https://x402-base.cryptorugmuncher.workers.dev/v1",
+    api_key="not-needed"  # x402 handles payment
+)
+response = client.chat.completions.create(
+    model="rugmunch-base",
+    messages=[{"role": "user", "content": "Check if token So11111111111111111111111111111112 is safe"}],
+    extra_headers={"x-payment": "base-usdc=0.02"}
+)
+```
+
+### Anthropic / Claude
+
+```bash
+curl https://x402-base.cryptorugmuncher.workers.dev/tools/rugshield \
+  -H "x-payment: base-usdc=0.02" \
+  -H "Content-Type: application/json" \
+  -d '{"address": "So11111111111111111111111111111112"}'
+```
+
+### MCP Server
+
+```json
+{
+  "mcpServers": {
+    "rugmunch-base": {
+      "url": "https://x402-base.cryptorugmuncher.workers.dev/mcp",
+      "headers": {"x-payment": "base-usdc=0.02"}
+    }
+  }
+}
+```
+
+No API keys needed. Pay per query via x402 micropayments. Free trials available.
 
 ## Support Our Mission
 
