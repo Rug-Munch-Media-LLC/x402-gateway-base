@@ -1,122 +1,83 @@
-# Rug Munch Intelligence - x402 Gateway (Base)
-
-> 44 crypto security & intelligence tools for AI agents. Pay per use, no API keys needed.
+# Rug Munch Intelligence — x402 Gateway (Base + EVM Chains)
 
 ## Overview
 
-Solo developer on a mission to stop crypto scams and protect the community. 44 professional-grade tools available via x402 micropayments on Base. Each tool returns structured JSON data. Free trials available (1-3 calls per tool).
+This Cloudflare Worker handles x402 USDC micropayments across Base and other EVM chains. It self-verifies on-chain Etherscan USDC receipts and routes paid requests to the Rug Munch Intelligence backend.
 
-## Tools
+**97 tools** are available via this gateway.
 
-| Tool | Price | Description |
-|------|-------|-------------|
-| URL Scam Detector | $0.01 | Detect phishing sites, fake docs, malicious redirects |
-| Rug Shield | $0.02 | Real-time rug protection score, multi-factor risk assessment |
-| Token Pulse | $0.01 | Market pulse - token momentum, volume, whale alerts |
-| Deep Contract Audit | $0.05 | Smart contract audit, honeypot detection, hidden mint functions |
-| Social Sentiment | $0.03 | Crypto sentiment analysis across Twitter, Telegram, Discord |
-| Wallet Profiler | $0.05 | Full wallet analysis with persona detection |
-| Launch Radar | $0.03 | New token launch detection with risk scoring |
-| Smart Money Tracker | $0.05 | Whale/insider tracking across chains |
-| Cluster Detection | $0.05 | Wallet cluster mapping, sybil detection |
-| Insider Tracker | $0.10 | Dev/team wallet tracking across all their tokens |
-| Token Forensics | $0.10 | Deep forensics report from DexScreener, GeckoTerminal, CoinGecko |
-| Whale Decoder | $0.15 | Advanced whale wallet analysis across chains |
-| Launch Intel | $0.05 | PumpFun tokens, trending pairs, bonding curve tracking |
-| Anomaly Detector | $0.08 | Volume spikes, price manipulation, liquidity anomalies |
-| Social Signal | $0.10 | Twitter + on-chain correlation analysis |
-| Market Overview | $0.05 | BTC/ETH prices, chain TVL, trending coins, DeFi stats |
-| Token Deep Dive | $0.10 | CoinGecko + DexScreener + CoinCap multi-source analysis |
-| Chain Health | $0.05 | TVL, protocols, gas fees across 7 chains |
-| Honeypot Check | $0.05 | Buy/sell simulation - verify you can actually sell |
-| Portfolio Tracker | $0.10 | Multi-wallet PnL, allocation, net worth across chains |
-| Copy Trade Finder | $0.10 | Find profitable wallets, win rates, positions |
-| Token Comparison | $0.08 | Side-by-side token comparison, 2-5 tokens |
-| Risk Monitor | $0.05 | Real-time alerts for rugs, whale dumps, contract changes |
-| DeFi Yield Scanner | $0.08 | Best APYs, unsustainable yield detection, TVL trends |
-| NFT Wash Detector | $0.10 | Fake volume detection, floor manipulation analysis |
-| Bridge Security | $0.08 | Cross-chain bridge TVL, exploits, audit status |
-| Gas Forecast | $0.05 | Optimal TX times, gas trends across chains |
-| Sniper Alert | $0.03 | New token launches with early buyer tracking |
-| Liquidity Flow | $0.05 | Real-time large swap tracking, whale movement alerts |
-| Rug Pull Predictor | $0.10 | ML-based rug probability prediction from contract patterns |
-| Airdrop Finder | $0.05 | Wallet eligibility checker for upcoming airdrops |
-| MEV Protection | $0.08 | Mempool sandwich attack risk, slippage optimization |
+## Supported Chains
 
-### On-Chain Intelligence
+| Chain     | Symbol |
+|-----------|--------|
+| Base      | BASE   |
+| Ethereum  | ETH    |
+| BSC       | BSC    |
+| Arbitrum  | ARB    |
+| Optimism  | OP     |
+| Polygon   | MATIC  |
 
-| Tool | Price | Description |
-|------|-------|-------------|
-| Whale Scanner | $0.03 | Token whale concentration analysis - top holders, risk scoring |
-| Whale Profiler | $0.05 | Wallet behavioral profiling - trading patterns, network influence |
-| Sniper Detector | $0.08 | Bot ring detection at token launches - Jito bundles, insider patterns |
-| Syndicate Scanner | $0.08 | Coordinated holder group detection - distribution analysis |
-| Syndicate Tracker | $0.10 | Wallet-to-wallet fund flow tracking through syndicate networks |
-| Wallet Graph | $0.10 | Full wallet relationship mapping - nodes, edges, cluster assignments |
+## Payment Flow
 
-### Scam Detection
-
-| Tool | Price | Description |
-|------|-------|-------------|
-| Profile Flip Detector | $0.03 | Detect tokens rebranded after rug pulls - name/symbol/logo changes |
-| Fresh Pair Scanner | $0.03 | Wash trading detection on new pairs - self-buying, fake volume |
-| Clone Detector | $0.02 | Find copycat tokens mimicking established projects |
-
-## AI Agent Integration
-
-Agents auto-discover tools via: `https://x402-base.cryptorugmuncher.workers.dev/.well-known/x402`
-
-### OpenAI / GPT
-
-```python
-import openai
-client = openai.OpenAI(
-    base_url="https://x402-base.cryptorugmuncher.workers.dev/v1",
-    api_key="not-needed"  # x402 handles payment
-)
-response = client.chat.completions.create(
-    model="rugmunch-base",
-    messages=[{"role": "user", "content": "Check if token So11111111111111111111111111111112 is safe"}],
-    extra_headers={"x-payment": "base-usdc=0.02"}
-)
+```
+Client                                Worker                              Backend
+  |                                      |                                    |
+  |  request + X-Payment-Authorization   |                                    |
+  |------------------------------------->|                                    |
+  |                                      |  verify via Etherscan API          |
+  |                                      |  (on-chain USDC receipt check)     |
+  |                                      |                                    |
+  |                                      |  forward verified request          |
+  |                                      |----------------------------------->|
+  |                                      |                                    |
+  |                                      |         result                     |
+  |                                      |<-----------------------------------|
+  |            result                     |                                    |
+  |<-------------------------------------|                                    |
 ```
 
-### Anthropic / Claude
+1. Client sends a request with the `X-Payment-Authorization` header.
+2. The Worker verifies the payment by checking the on-chain USDC transaction via the Etherscan API.
+3. If verified, the Worker forwards the request to the backend.
+4. The backend processes the request and returns the result through the Worker to the client.
 
-```bash
-curl https://x402-base.cryptorugmuncher.workers.dev/tools/rugshield \
-  -H "x-payment: base-usdc=0.02" \
-  -H "Content-Type: application/json" \
-  -d '{"address": "So11111111111111111111111111111112"}'
+## Trial Access
+
+| Verification Level  | Free Requests |
+|---------------------|---------------|
+| Fingerprint only    | 1             |
+| Wallet verified     | 3             |
+
+After trial requests are consumed, a valid x402 USDC micropayment is required per request.
+
+## Worker Endpoint
+
+```
+https://x402-base.rugmuncher.workers.dev
 ```
 
-### MCP Server
+## Payment Address (EVM)
 
-```json
-{
-  "mcpServers": {
-    "rugmunch-base": {
-      "url": "https://x402-base.cryptorugmuncher.workers.dev/mcp",
-      "headers": {"x-payment": "base-usdc=0.02"}
-    }
-  }
-}
+```
+0x1E3AC01d0fdb976179790BDD02823196A92705C9
 ```
 
-No API keys needed. Pay per query via x402 micropayments. Free trials available.
+## Frontend
 
-## Support Our Mission
+```
+https://rmi-site.pages.dev
+```
 
-We're a solo developer building tools to stop crypto scams. 100% of revenue funds server costs and more anti-scam tools.
+---
 
-- **Tip (Base):** `0x1E3AC01d0fdb976179790BDD02823196A92705C9`
-- **Tip (Solana):** `Gix4P9AmwcZRGzr2hCEME5m2QAvY86dBfm8c7e7MpFzv`
-- **Tip API:** `https://x402-base.cryptorugmuncher.workers.dev/tip`
+## RugCharts — The DexScreener Killer
 
-## Links
+Rug Munch Intelligence includes **RugCharts**, a next-generation charting and analytics platform that outperforms DexScreener:
 
-- **Gateway:** https://x402-base.cryptorugmuncher.workers.dev
-- **Website:** https://rugmunch.io
-- **Twitter:** https://x.com/CryptoRugMunch
+- **Live trades streaming** — watch buys and sells hit the tape in real time
+- **TA bot analysis** — automated technical analysis signals overlaid directly on charts
+- **Professional charting** — candlesticks, order flow, volume profile, and more
+- **Multi-chain coverage** — trade visualization across all supported chains
+- **Scam detection built in** — every token is scored for rug-pull risk before it even renders
 
-[![smithery badge](https://smithery.ai/badge/cryptorugmuncher/rugmunch-base)](https://smithery.ai/servers/cryptorugmuncher/rugmunch-base)
+RugCharts delivers a better product than DexScreener with fraud detection baked in from the ground up. No more trading into a black hole — know what you're buying before you buy it.
