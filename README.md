@@ -1,60 +1,80 @@
-# Rug Munch Intelligence — x402 Gateway (Base + EVM Chains)
+# Rug Munch Intelligence — x402 Gateway (Base + EVM)
 
-## Overview
+## What This Is
 
-This Cloudflare Worker handles x402 USDC micropayments across Base and other EVM chains. It self-verifies on-chain Etherscan USDC receipts and routes paid requests to the Rug Munch Intelligence backend.
+This Cloudflare Worker is the **x402 payment gateway** for Rug Munch Intelligence on Base, Ethereum, BSC, Arbitrum, Optimism, and Polygon. It sits between clients and the backend, enforcing per-call USDC micropayments before forwarding requests.
 
-**97 tools** are available via this gateway.
+This is infrastructure — not a standalone product. All 97 tools live in the [RMI backend](https://github.com/Rug-Munch-Media-LLC/rug-munch-intelligence-mcp). This worker just handles the money.
+
+## Architecture
+
+```
+Client (MCP / HTTP / App)
+  │
+  ▼
+x402 Gateway (this worker)  ◄── checks USDC payment or trial balance
+  │
+  ▼
+RMI Backend (97 tools)      ◄── actual intelligence processing
+```
+
+- **MCP clients** (Claude Desktop, Cursor) connect via the [rug-munch-intelligence-mcp](https://github.com/Rug-Munch-Media-LLC/rug-munch-intelligence-mcp) package, which calls this gateway
+- **HTTP clients** (curl, bots, apps) call this gateway directly at `POST /api/v1/x402-tools/{tool}`
+- **Web app** at [rugmunch.io](https://rugmunch.io) calls through this gateway
+
+Same backend, same tools, same payment — regardless of how you access it.
 
 ## Supported Chains
 
-| Chain     | Symbol |
-|-----------|--------|
-| Base      | BASE   |
-| Ethereum  | ETH    |
-| BSC       | BSC    |
-| Arbitrum  | ARB    |
-| Optimism  | OP     |
-| Polygon   | MATIC  |
+| Chain     | Symbol | Verification Method |
+|-----------|--------|-------------------|
+| Base      | BASE   | Self-verified (Etherscan on-chain USDC receipt) |
+| Ethereum  | ETH    | Self-verified |
+| BSC       | BSC    | Self-verified |
+| Arbitrum  | ARB   | Self-verified |
+| Optimism  | OP    | Self-verified |
+| Polygon   | POL   | Self-verified |
 
 ## Payment Flow
 
 ```
-Client                                Worker                              Backend
-  |                                      |                                    |
-  |  request + X-Payment-Authorization   |                                    |
-  |------------------------------------->|                                    |
-  |                                      |  verify via Etherscan API          |
-  |                                      |  (on-chain USDC receipt check)     |
-  |                                      |                                    |
-  |                                      |  forward verified request          |
-  |                                      |----------------------------------->|
-  |                                      |                                    |
-  |                                      |         result                     |
-  |                                      |<-----------------------------------|
-  |            result                     |                                    |
-  |<-------------------------------------|                                    |
+Client                              Gateway                             Backend
+  │                                    │                                   │
+  │  request + X-Payment-Authorization │                                   │
+  │───────────────────────────────────►│                                   │
+  │                                    │  verify USDC via Etherscan API      │
+  │                                    │  or check trial balance            │
+  │                                    │                                   │
+  │                                    │  forward verified request          │
+  │                                    │──────────────────────────────────►│
+  │                                    │                                   │
+  │                                    │           result                   │
+  │                                    │◄──────────────────────────────────│
+  │           result                    │                                   │
+  │◄───────────────────────────────────│                                   │
 ```
 
-1. Client sends a request with the `X-Payment-Authorization` header.
-2. The Worker verifies the payment by checking the on-chain USDC transaction via the Etherscan API.
-3. If verified, the Worker forwards the request to the backend.
-4. The backend processes the request and returns the result through the Worker to the client.
+1. Client sends a request with the `X-Payment-Authorization` header
+2. Gateway verifies the USDC payment on-chain via Etherscan, or checks trial balance
+3. If valid, forwards the request to the backend
+4. Backend returns result through the gateway
 
 ## Trial Access
 
-| Verification Level  | Free Requests |
-|---------------------|---------------|
-| Fingerprint only    | 1             |
-| Wallet verified     | 3             |
+| Verification Level  | Free Requests per Tool |
+|---------------------|----------------------|
+| Fingerprint only    | 1                    |
+| Wallet verified     | 3                    |
 
 After trial requests are consumed, a valid x402 USDC micropayment is required per request.
 
-## Worker Endpoint
+## Endpoints
 
-```
-https://x402-base.rugmuncher.workers.dev
-```
+- **Gateway**: `https://x402-base.rugmuncher.workers.dev`
+- **Tools**: `POST /api/v1/x402-tools/{tool_name}`
+- **Catalog**: `GET /api/v1/x402/tools-catalog`
+- **Dashboard**: `GET /api/v1/x402/dashboard`
+- **Discovery**: `GET /.well-known/x402`
 
 ## Payment Address (EVM)
 
@@ -62,22 +82,13 @@ https://x402-base.rugmuncher.workers.dev
 0x1E3AC01d0fdb976179790BDD02823196A92705C9
 ```
 
-## Frontend
+## Related
 
-```
-https://rugmunch.io
-```
+- [rug-munch-intelligence-mcp](https://github.com/Rug-Munch-Media-LLC/rug-munch-intelligence-mcp) — MCP client for AI agents (97 tools)
+- [x402-gateway-solana](https://github.com/Rug-Munch-Media-LLC/x402-gateway-solana) — Solana payment gateway
+- [rugcharts](https://github.com/Rug-Munch-Media-LLC/rugcharts) — Professional charting & TA analysis
+- [rugmunch.io](https://rugmunch.io) — Web app
 
----
+## License
 
-## RugCharts — Professional Charting & Analysis
-
-Rug Munch Intelligence includes **RugCharts**, a next-generation charting and analytics platform:
-
-- **Live trades streaming** — watch buys and sells hit the tape in real time
-- **TA bot analysis** — automated technical analysis signals overlaid directly on charts
-- **Professional charting** — candlesticks, order flow, volume profile, and more
-- **Multi-chain coverage** — trade visualization across all supported chains
-- **Scam detection built in** — every token is scored for rug-pull risk before it even renders
-
-RugCharts delivers professional-grade charting with fraud detection baked in from the ground up. No more trading into a black hole — know what you're buying before you buy it.
+Proprietary — Copyright 2026 Rug Munch Media LLC. All rights reserved.
