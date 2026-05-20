@@ -65,14 +65,14 @@ https://x402-base.rugmuncher.workers.dev
 ## Frontend
 
 ```
-https://rmi-site.pages.dev
+https://rugmunch.io
 ```
 
 ---
 
-## RugCharts — The DexScreener Killer
+## RugCharts — Professional Charting & Analysis
 
-Rug Munch Intelligence includes **RugCharts**, a next-generation charting and analytics platform that outperforms DexScreener:
+Rug Munch Intelligence includes **RugCharts**, a next-generation charting and analytics platform:
 
 - **Live trades streaming** — watch buys and sells hit the tape in real time
 - **TA bot analysis** — automated technical analysis signals overlaid directly on charts
@@ -80,4 +80,4 @@ Rug Munch Intelligence includes **RugCharts**, a next-generation charting and an
 - **Multi-chain coverage** — trade visualization across all supported chains
 - **Scam detection built in** — every token is scored for rug-pull risk before it even renders
 
-RugCharts delivers a better product than DexScreener with fraud detection baked in from the ground up. No more trading into a black hole — know what you're buying before you buy it.
+RugCharts delivers professional-grade charting with fraud detection baked in from the ground up. No more trading into a black hole — know what you're buying before you buy it.
