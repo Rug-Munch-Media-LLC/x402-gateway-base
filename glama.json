@@ -2,16 +2,14 @@
   "$schema": "https://glama.ai/mcp/schemas/server.json",
   "maintainers": ["cryptorugmuncher"],
   "name": "Rug Munch Intelligence x402 Gateway (Base)",
-  "description": "240+ crypto security & intelligence MCP tools for Base blockchain. Real-time token analysis, scam detection, whale tracking & profiling, contract audits, rug pull prediction, honeypot checks, wallet profiling, MEV protection, insider detection, wash trading analysis, sentiment analysis, arbitrage scanning, syndicate network analysis, wallet graph mapping, clone detection, fresh pair scanning, sniper detection, and 196 data provider integrations (DexScreener, Jupiter, Birdeye, Helius, CoinGecko, DeFiLlama, Nansen, Arkham, GMGN, Moralis, PumpFun, Raydium + 17 more). Full MCP tools/call support. x402 micropayments $0.01-$0.15/call with auto-refund guarantee. Crypto security, DeFi intelligence, blockchain analytics, rug detection, scam prevention, Base MCP server.",
+  "description": "218 crypto security & intelligence MCP tools for Base. Real-time token analysis, scam detection, whale tracking, contract audits, rug pull prediction, honeypot checks, wallet profiling, MEV protection, insider detection, wash trading analysis, arbitrage scanning, syndicate tracking, clone detection, wallet graph mapping, fresh pair scanning, sniper detection, and 154 data provider integrations (DexScreener, Jupiter, Birdeye, Helius, CoinGecko, Nansen, Arkham, GMGN, Moralis, PumpFun, Raydium, DeFiLlama, CoinMarketCap, CryptoPanic, AgentFi, Blockrun + 12 more). Full MCP tools/call support. x402 micropayments $0.01-$0.15/call. Clean URL: base.rugmunch.io",
   "server": {
-    "url": "https://x402-base.cryptorugmuncher.workers.dev",
+    "url": "https://base.rugmunch.io",
     "transport": "http",
-    "capabilities": {
-      "tools": {
-        "listChanged": true
-      }
-    }
+    "capabilities": { "tools": { "listChanged": true } }
   },
-  "logo": "./logo.png",
-  "tags": ["crypto", "base", "security", "defi", "scam-detection", "blockchain", "mcp", "x402", "analytics", "intelligence"]
+  "logo": "https://rugmunch.io/logo.png",
+  "homepage": "https://rugmunch.io",
+  "documentation": "https://rugmunch.io/docs",
+  "tags": ["crypto", "base", "security", "defi", "scam-detection", "blockchain", "mcp", "x402", "analytics", "intelligence", "whale-tracking", "rug-pull", "contract-audit"]
 }
