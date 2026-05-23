@@ -3105,7 +3105,7 @@ async function handleRequest(request, env) {
         entity: "Rug Munch Media LLC \u2014 Wyoming, USA",
         mission: "Protecting retail investors from crypto scams through AI-powered security tools",
         dao_transition: "Full DAO LLC transition under Wyoming state law planned within 12 months. Community governance via token-based voting.",
-        token: "V2 token launch planned mid-2026. 1:1 airdrop checker for v1 $CRM and $cryptorugmunch holders coming soon \u2014 verify eligibility at launch.",
+        token: "V2 token launch planned mid-2026. 1:1 airdrop checker for v1 $CRM and $cryptorugmunch holders coming soon \u2014 verify your eligibility and claim your tokens on launch day.",
         open_source: "https://github.com/Rug-Munch-Media-LLC/rugmuncher-backend",
         no_vc: "Bootstrapped. No VC. Revenue from tool calls only.",
         security: "No API keys stored. Payments verified on-chain."
