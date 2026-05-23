@@ -3038,7 +3038,7 @@ async function handleRequest(request: Request, env: Env): Promise<Response> {
         github_org: "https://github.com/Rug-Munch-Media-LLC",
         github_repo: "https://github.com/Rug-Munch-Media-LLC/rugmuncher-backend",
         website: "https://rugmunch.io",
-        email: "cryptorugmuncher@gmail.com",
+        email: "biz@rugmunch.io",
       },
       
       // ── MCP Services (28 data providers) ──
