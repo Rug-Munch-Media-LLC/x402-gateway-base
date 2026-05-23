@@ -3021,10 +3021,11 @@ async function handleRequest(request: Request, env: Env): Promise<Response> {
         founder: "20-year teacher turned full-time crypto scam investigator. Built solo to protect retail investors.",
         entity: "Rug Munch Media LLC — Wyoming, USA",
         mission: "Protecting retail investors from crypto scams through AI-powered security tools",
-        dao_transition: "Full DAO LLC transition under Wyoming state law planned within 12 months. Community governance and token-based voting to give users control over the project direction.",
+        dao_transition: "Full DAO LLC transition under Wyoming state law planned within 12 months. Community governance via token-based voting.",
+        token: "V2 token launch planned mid-2026. 1:1 airdrop checker for v1 $CRM and $cryptorugmunch holders coming soon — verify eligibility at launch.",
         open_source: "https://github.com/Rug-Munch-Media-LLC/rugmuncher-backend",
-        no_vc: "Bootstrapped. No VC. No token (yet). Revenue from tool calls only.",
-        security: "No API keys stored. Payments verified on-chain. No user data collected beyond wallet addresses for trial tracking.",
+        no_vc: "Bootstrapped. No VC. Revenue from tool calls only.",
+        security: "No API keys stored. Payments verified on-chain.",
       },
       
       // ── Social & Community ──
