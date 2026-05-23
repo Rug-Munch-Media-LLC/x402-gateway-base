@@ -3027,6 +3027,59 @@ async function handleRequest(request, env) {
     }
     return new Response(lines.join("\n"), { headers: { "Content-Type": "text/plain; charset=utf-8" } });
   }
+  if (path === "/mcp-x402-docs") {
+    const rmiTotal = Object.keys(RMI_TOOLS).length;
+    const mcpTotal = Object.values(allMcp).flat().length;
+    const categories = [...new Set(Object.values(RMI_TOOLS).map((t) => t.category))];
+    return Response.json({
+      name: "Rug Munch Intelligence x402 Gateway",
+      description: `${rmiTotal + mcpTotal} crypto security & intelligence tools via x402 micropayments. MCP tools/call support. DeFi security, scam detection, whale tracking, contract audits.`,
+      version: "2.1.0",
+      gateway: env.GW_URL,
+      alternate_gateway: env.SOLANA_GATEWAY || env.GW_URL,
+      network: env.NETWORK,
+      network_name: env.NETWORK_NAME,
+      stats: { rmi_tools: rmiTotal, mcp_tools: mcpTotal, total: rmiTotal + mcpTotal, categories: categories.length, services: Object.keys(allMcp).length },
+      endpoints: {
+        mcp: `${env.GW_URL}/mcp`,
+        mcp_docs: `${env.GW_URL}/mcp-x402-docs`,
+        tools_list: `${env.GW_URL}/mcp (POST tools/list)`,
+        tools_call: `${env.GW_URL}/mcp (POST tools/call)`,
+        rest: `${env.GW_URL}/tools/{tool_name}`,
+        health: `${env.GW_URL}/health`,
+        discovery: `${env.GW_URL}/.well-known/x402`,
+        frameworks: `${env.GW_URL}/frameworks`,
+        openai: `${env.GW_URL}/openai-tools`,
+        anthropic: `${env.GW_URL}/anthropic-tools`,
+        llms_txt: `${env.GW_URL}/llms.txt`,
+        pricing: `${env.GW_URL}/pricing`
+      },
+      pricing: {
+        range: "$0.01 - $0.15 USDC per call",
+        trial_calls: "1-5 free per tool",
+        payment: "x402 protocol \u2014 USDC on Solana & Base",
+        human_payment: "sol.rugmunch.io | base.rugmunch.io \u2014 wallet connect, multi-token"
+      },
+      quickstart: {
+        mcp_client: `npx -y mcp-remote@latest ${env.GW_URL}/mcp`,
+        smithery: "https://smithery.ai/server/@cryptorugmunch/x402",
+        claude_config: `{ "mcpServers": { "rmi": { "command": "npx", "args": ["-y", "mcp-remote@latest", "${env.GW_URL}/mcp"] } } }`
+      },
+      categories: Object.entries(
+        Object.values(RMI_TOOLS).reduce((acc, t) => {
+          (acc[t.category] = acc[t.category] || []).push(t.name);
+          return acc;
+        }, {})
+      ).map(([cat, tools]) => ({ category: cat, count: tools.length, tools })),
+      social: {
+        twitter: "https://x.com/cryptorugmunch",
+        github: "https://github.com/Rug-Munch-Media-LLC/rugmuncher-backend",
+        website: "https://rugmunch.io",
+        docs: "https://rugmunch.io/docs"
+      },
+      maintainer: { name: "Crypto Rug Muncher", role: "Solo dev on a mission to stop crypto scams" }
+    });
+  }
   if (path === "/openai-tools") {
     const tools = [...Object.values(RMI_TOOLS).map(fmt), ...Object.entries(allMcp).flatMap(([svc, ts]) => ts.map((t) => ({ type: "function", function: { name: svc + "_" + t.name, description: t.description, parameters: t.parameters || { type: "object", properties: {} } } })))];
     return Response.json({ provider: "openai", rmi_tools: Object.keys(RMI_TOOLS).length, total: tools.length, tools });
