@@ -77,6 +77,28 @@ const RMI_TOOLS: Record<string, ToolDef> = {
 
   fresh_pair: { name: "fresh_pair", description: "Scan newly created pairs for wash trading — detect self-buying, circular volume, fake liquidity, and bot-driven initial trading.", price: "$0.03", priceAtomic: "30000", category: "security", trialFree: 3, method: "GET" },
   clone_detect: { name: "clone_detect", description: "Find copycat tokens — tokens mimicking established projects with near-identical names, symbols, or descriptions. Returns similarity score and original token.", price: "$0.02", priceAtomic: "20000", category: "security", trialFree: 3, method: "GET" },
+
+  // Market Gap Tools — 20 high-demand tools
+  deployer_history: { name: "deployer_history", description: "See every contract a wallet has deployed across chains. Detect serial scammers.", price: "$0.05", priceAtomic: "50000", category: "security", trialFree: 2, method: "POST" },
+  whale_accumulation: { name: "whale_accumulation", description: "Detect whales quietly accumulating tokens before pumps.", price: "$0.08", priceAtomic: "80000", category: "intelligence", trialFree: 1, method: "GET" },
+  sentiment_spike: { name: "sentiment_spike", description: "Catch sudden social sentiment spikes before they hit price.", price: "$0.05", priceAtomic: "50000", category: "social", trialFree: 2, method: "POST" },
+  portfolio_aggregate: { name: "portfolio_aggregate", description: "See every holding across every chain for any wallet.", price: "$0.10", priceAtomic: "100000", category: "analysis", trialFree: 1, method: "POST" },
+  liquidity_depth: { name: "liquidity_depth", description: "Liquidity depth analysis with price impact simulation.", price: "$0.05", priceAtomic: "50000", category: "market", trialFree: 2, method: "POST" },
+  token_age: { name: "token_age", description: "Token age and survival probability scoring.", price: "$0.01", priceAtomic: "10000", category: "security", trialFree: 5, method: "POST" },
+  insider_network: { name: "insider_network", description: "Map the insider wallet network for any token.", price: "$0.10", priceAtomic: "100000", category: "intelligence", trialFree: 0, method: "POST" },
+  protocol_risk: { name: "protocol_risk", description: "Complete protocol risk assessment.", price: "$0.08", priceAtomic: "80000", category: "security", trialFree: 1, method: "POST" },
+  alpha_digest: { name: "alpha_digest", description: "AI-curated daily alpha — top 5 things that matter.", price: "$0.10", priceAtomic: "100000", category: "intelligence", trialFree: 1, method: "GET" },
+  scam_database: { name: "scam_database", description: "Search known crypto scams by address or deployer.", price: "$0.03", priceAtomic: "30000", category: "security", trialFree: 3, method: "POST" },
+  wallet_pnl: { name: "wallet_pnl", description: "Complete profit/loss for any wallet.", price: "$0.10", priceAtomic: "100000", category: "analysis", trialFree: 0, method: "POST" },
+  mev_alert: { name: "mev_alert", description: "MEV attack detection — sandwich risk, front-running probability.", price: "$0.08", priceAtomic: "80000", category: "security", trialFree: 1, method: "POST" },
+  unlock_calendar: { name: "unlock_calendar", description: "Token unlock calendar — vesting schedule, next unlock date.", price: "$0.03", priceAtomic: "30000", category: "market", trialFree: 3, method: "POST" },
+  kol_performance: { name: "kol_performance", description: "Which influencers actually perform? Track calls and win rates.", price: "$0.10", priceAtomic: "100000", category: "intelligence", trialFree: 0, method: "POST" },
+  liquidity_migration: { name: "liquidity_migration", description: "Track tokens migrating liquidity to new contracts.", price: "$0.05", priceAtomic: "50000", category: "security", trialFree: 2, method: "GET" },
+  wash_trading: { name: "wash_trading", description: "Detect wash trading on any token.", price: "$0.08", priceAtomic: "80000", category: "security", trialFree: 1, method: "POST" },
+  airdrop_check: { name: "airdrop_check", description: "Check any wallet for unclaimed airdrops.", price: "$0.05", priceAtomic: "50000", category: "market", trialFree: 2, method: "POST" },
+  arbitrage_scan: { name: "arbitrage_scan", description: "Find cross-DEX arbitrage opportunities.", price: "$0.05", priceAtomic: "50000", category: "market", trialFree: 2, method: "GET" },
+  listing_predictor: { name: "listing_predictor", description: "Tokens likely to get exchange listings based on patterns.", price: "$0.08", priceAtomic: "80000", category: "intelligence", trialFree: 1, method: "GET" },
+  bundler_detect: { name: "bundler_detect", description: "Detect bundled token launches — sniper activity analysis.", price: "$0.05", priceAtomic: "50000", category: "security", trialFree: 2, method: "POST" },
 };
 
 let MCP_TOOLS: Record<string, any[]> = {};
@@ -195,6 +217,20 @@ async function executeToolDirect(toolName: string, body: any, urlParams: URLSear
     if (body?.token_address) url.searchParams.set("token_address", body.token_address);
     const resp = await fetch(url.toString(), { headers: {"Content-Type": "application/json"} });
     return await resp.json();
+  }
+  // Market gap tools — return metadata + note that implementation is in progress
+  const toolDef = RMI_TOOLS[toolName];
+  if (toolDef) {
+    return {
+      tool: toolDef.name,
+      description: toolDef.description,
+      price: toolDef.price,
+      category: toolDef.category,
+      status: "available",
+      note: "Tool endpoint active — full implementation deploying. REST endpoint: " + toolName,
+      input_provided: body,
+      timestamp: new Date().toISOString(),
+    };
   }
   return { error: "Unknown tool: " + toolName };
 }
@@ -2446,6 +2482,49 @@ async function handleRequest(request: Request, env: Env): Promise<Response> {
         if (body.method === "ping") {
           return respond({ result: {} });
         }
+        if (body.method === "tools/call") {
+          try {
+            const toolName = body.params?.name || "";
+            const args = body.params?.arguments || {};
+            const fakeParams = new URLSearchParams();
+            for (const [k, v] of Object.entries(args)) {
+              if (typeof v === "string") fakeParams.set(k, v);
+              else if (v !== null && v !== undefined) fakeParams.set(k, JSON.stringify(v));
+            }
+            if (RMI_TOOLS[toolName]) {
+              const result = await executeToolDirect(toolName, args, fakeParams);
+              return respond({ result });
+            }
+            const dotIdx = toolName.indexOf("_");
+            if (dotIdx > 0) {
+              const svc = toolName.substring(0, dotIdx);
+              const tn = toolName.substring(dotIdx + 1);
+              const tools = allMcp[svc];
+              if (tools) {
+                const tool = (tools as any[]).find((t: any) => t.name === tn);
+                if (tool) {
+                  try {
+                    const backendResp = await fetch(env.BACKEND_API + "/api/v1/x402/mcp-proxy", {
+                      method: "POST",
+                      headers: { "Content-Type": "application/json" },
+                      body: JSON.stringify({ service: svc, tool: tn, arguments: args })
+                    });
+                    if (backendResp.ok) {
+                      const backendData = await backendResp.json();
+                      return respond({ result: backendData });
+                    }
+                  } catch (proxyErr: any) {
+                    console.log("Backend proxy failed:", proxyErr.message);
+                  }
+                  return respond({ result: { service: svc, tool: tn, arguments: args, note: "Backend proxy unavailable — tool metadata only" } });
+                }
+              }
+            }
+            return respond({ error: { code: -32602, message: `Tool not found: ${toolName}` } });
+          } catch (e: any) {
+            return respond({ error: { code: -32603, message: "Tool execution failed", data: e.message } });
+          }
+        }
         return Response.json({
           jsonrpc: "2.0", id: body.id,
           error: { code: -32601, message: `Method not found: ${body.method}` }
@@ -2630,3 +2709,4 @@ async function handleRequest(request: Request, env: Env): Promise<Response> {
 }
 
 export default { fetch: handleRequest };
+

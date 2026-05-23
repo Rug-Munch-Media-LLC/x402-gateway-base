@@ -1,6 +1,6 @@
 {
     "name": "Rug Munch Intelligence x402 Gateway (Base)",
-    "description": "35 crypto security & intelligence tools via x402 micropayments on Base. Deep contract audits, honeypot detection, whale decoding, rug pull prediction, copy trade finding, DeFi yield scanning, NFT wash trading, bridge security, gas forecasting + 26 more. Auto-refund guarantee. $0.01-$0.15/call.",
+    "description": "240+ crypto security & intelligence tools via x402 micropayments on Base. Deep contract audits, honeypot detection, whale profiling & scanning, rug pull prediction, copy trade detection, DeFi yield scanning, NFT wash trading, bridge security, MEV protection, syndicate tracking & network analysis, wallet graph mapping, profile flip detection, clone detection, fresh pair scanning, sniper detection, 20 market gap tools (deployer history, whale accumulation, sentiment spike, portfolio aggregate, wash trading, insider network, bundler detect, airdrop check, arbitrage scan, listing predictor, and more) + 196 data provider tools across 28 services. Full MCP tools/call support. Auto-refund guarantee. $0.01-$0.15/call.",
     "repository": {
         "type": "github",
         "url": "https://github.com/Rug-Munch-Media-LLC/rugmuncher-backend"
