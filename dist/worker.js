@@ -3118,7 +3118,7 @@ async function handleRequest(request, env) {
         telegram_alerts: "https://t.me/cryptorugmuncher",
         telegram_alerts_description: "Scam alerts, independent analysis, commentary, and product updates",
         github_org: "https://github.com/Rug-Munch-Media-LLC",
-        github_repo: "https://github.com/Rug-Munch-Media-LLC/rugmuncher-backend",
+        github_repo: "https://github.com/Rug-Munch-Media-LLC/x402-gateway-base",
         website: "https://rugmunch.io",
         email: "biz@rugmunch.io"
       },
