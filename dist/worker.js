@@ -3101,10 +3101,12 @@ async function handleRequest(request, env) {
       categories: catBreakdown,
       // ── Trust & Transparency ──
       trust: {
-        founder: "20-year teacher turned full-time crypto scam investigator. 2+ years exposing scams on X. Built this solo to protect retail investors.",
-        track_record: "2+ years of scam reporting. Thousands of scams exposed. Featured in crypto security communities.",
-        open_source: "https://github.com/Rug-Munch-Media-LLC/rugmuncher-backend \u2014 backend is public",
-        no_vc: "Bootstrapped. No VC funding. No token. Revenue from tool calls only.",
+        founder: "20-year teacher turned full-time crypto scam investigator. Built solo to protect retail investors.",
+        entity: "Rug Munch Media LLC \u2014 Wyoming, USA",
+        mission: "Protecting retail investors from crypto scams through AI-powered security tools",
+        dao_transition: "Full DAO LLC transition under Wyoming state law planned within 12 months. Community governance and token-based voting to give users control over the project direction.",
+        open_source: "https://github.com/Rug-Munch-Media-LLC/rugmuncher-backend",
+        no_vc: "Bootstrapped. No VC. No token (yet). Revenue from tool calls only.",
         security: "No API keys stored. Payments verified on-chain. No user data collected beyond wallet addresses for trial tracking."
       },
       // ── Social & Community ──
@@ -3128,10 +3130,11 @@ async function handleRequest(request, env) {
       // ── Maintainer ──
       maintainer: {
         name: "Crypto Rug Muncher",
-        title: "Founder & Solo Developer \u2014 Rug Munch Media LLC",
+        title: "Founder & Solo Developer \u2014 Rug Munch Media LLC (Wyoming, USA)",
         mission: "Building AI tools to stop crypto scams and protect retail investors",
-        based: "United States",
-        since: 2026
+        based: "Wyoming, United States",
+        since: 2026,
+        future: "Transitioning to DAO LLC within 12 months \u2014 community governance via token-based voting on product direction, fee structures, and new tool development"
       }
     });
   }
