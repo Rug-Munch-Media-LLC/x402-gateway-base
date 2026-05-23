@@ -2,7 +2,7 @@
   "$schema": "https://glama.ai/mcp/schemas/server.json",
   "maintainers": ["cryptorugmuncher"],
   "name": "Rug Munch Intelligence x402 Gateway (Base)",
-  "description": "35 crypto security & intelligence tools via x402 micropayments. Deep contract audits, honeypot detection, whale decoding, rug pull prediction, copy trade finding, DeFi yield scanning, NFT wash trading, bridge security, gas forecasting + 26 more. From $0.01/call. Auto-refund guarantee. Solo dev on a mission to stop crypto scams.",
+  "description": "240+ crypto security & intelligence MCP tools for Base blockchain. Real-time token analysis, scam detection, whale tracking & profiling, contract audits, rug pull prediction, honeypot checks, wallet profiling, MEV protection, insider detection, wash trading analysis, sentiment analysis, arbitrage scanning, syndicate network analysis, wallet graph mapping, clone detection, fresh pair scanning, sniper detection, and 196 data provider integrations (DexScreener, Jupiter, Birdeye, Helius, CoinGecko, DeFiLlama, Nansen, Arkham, GMGN, Moralis, PumpFun, Raydium + 17 more). Full MCP tools/call support. x402 micropayments $0.01-$0.15/call with auto-refund guarantee. Crypto security, DeFi intelligence, blockchain analytics, rug detection, scam prevention, Base MCP server.",
   "server": {
     "url": "https://x402-base.cryptorugmuncher.workers.dev",
     "transport": "http",
@@ -12,5 +12,6 @@
       }
     }
   },
-  "logo": "./logo.png"
+  "logo": "./logo.png",
+  "tags": ["crypto", "base", "security", "defi", "scam-detection", "blockchain", "mcp", "x402", "analytics", "intelligence"]
 }
