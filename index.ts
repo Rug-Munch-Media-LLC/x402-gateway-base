@@ -705,7 +705,46 @@ async function executeSocialSignal(query: string): Promise<any> {
     }
   } catch (e) { console.debug("CryptoPanic failed:", e); }
   
-  result.confidence = result.sources_used.length >= 3 ? "high" : result.sources_used.length >= 2 ? "medium" : "low";
+  // 4. CoinGecko trending/community data
+  try {
+    const resp = await fetch("https://api.coingecko.com/api/v3/search/trending");
+    if (resp.ok) {
+      const data = await resp.json();
+      const coins = data.coins || [];
+      const matched = coins.find((c: any) => 
+        c.item?.name?.toLowerCase() === query.toLowerCase() || 
+        c.item?.symbol?.toLowerCase() === query.toLowerCase()
+      );
+      if (matched) {
+        result.coingecko_trending = { rank: matched.item?.market_cap_rank, score: matched.item?.score, market_cap_rank: matched.item?.market_cap_rank };
+        result.signals.push({ type: "trending", detail: "Currently trending on CoinGecko (rank " + (matched.item?.market_cap_rank || "N/A") + ")" });
+        result.sources_used.push("coingecko_trending");
+      }
+    }
+  } catch (e) { console.debug("CoinGecko trending failed:", e); }
+  
+  // 5. LunarCrush social data (free tier)
+  try {
+    const lcKey = "wr70xz6kws7tysb8dxzhdkgemphy8wutq6chfen";
+    const resp = await fetch("https://lunarcrush.com/api4/public/coins/" + query.toUpperCase() + "/v1", {
+      headers: { "Authorization": "Bearer " + lcKey }
+    });
+    if (resp.ok) {
+      const data = await resp.json();
+      if (data.data) {
+        result.lunarcrush = {
+          galaxy_score: data.data.galaxy_score,
+          social_score: data.data.social_score,
+          market_cap: data.data.market_cap,
+          mentions_24h: data.data.mentions_24h
+        };
+        result.sources_used.push("lunarcrush");
+        if (data.data.galaxy_score > 50) result.signals.push({ type: "high_galaxy_score", detail: "LunarCrush Galaxy Score: " + data.data.galaxy_score });
+      }
+    }
+  } catch (e) { console.debug("LunarCrush failed (free tier):", e); }
+
+  result.confidence = result.sources_used.length >= 4 ? "high" : result.sources_used.length >= 2 ? "medium" : "low";
   if (result.confidence === "high" && result.sentiment_score > 0.3) result.recommendation = "STRONG_BUY";
   else if (result.confidence === "high" && result.sentiment_score > 0) result.recommendation = "BUY";
   else if (result.confidence === "medium" && result.sentiment_score > 0) result.recommendation = "CAUTIOUS_BUY";
@@ -1226,6 +1265,26 @@ async function executeSentiment(token: string, chain: string): Promise<any> {
       }
     }
   } catch (e) { console.debug("DexScreener social failed:", e); }
+
+  // 4. LunarCrush social scoring (free tier)
+  try {
+    const lcKey = "wr70xz6kws7tysb8dxzhdkgemphy8wutq6chfen";
+    const resp = await fetch("https://lunarcrush.com/api4/public/coins/" + token.toUpperCase() + "/v1", {
+      headers: { "Authorization": "Bearer " + lcKey }
+    });
+    if (resp.ok) {
+      const data = await resp.json();
+      if (data.data) {
+        result.lunarcrush = {
+          galaxy_score: data.data.galaxy_score,
+          social_score: data.data.social_score,
+          correlation_rank: data.data.correlation_rank,
+          volatility: data.data.volatility
+        };
+        result.sources_used.push("lunarcrush");
+      }
+    }
+  } catch (e) { console.debug("LunarCrush failed:", e); }
 
   // Overall sentiment score
   const hasData = result.sources_used.length > 0;
