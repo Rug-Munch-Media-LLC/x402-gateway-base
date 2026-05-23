@@ -3031,53 +3031,108 @@ async function handleRequest(request, env) {
     const rmiTotal = Object.keys(RMI_TOOLS).length;
     const mcpTotal = Object.values(allMcp).flat().length;
     const categories = [...new Set(Object.values(RMI_TOOLS).map((t) => t.category))];
+    const catBreakdown = Object.entries(
+      Object.values(RMI_TOOLS).reduce((acc, t) => {
+        (acc[t.category] = acc[t.category] || []).push(`${t.name} (${t.price})`);
+        return acc;
+      }, {})
+    ).map(([cat, tools]) => ({ category: cat, count: tools.length, tools }));
     return Response.json({
+      // ── Identity ──
       name: "Rug Munch Intelligence x402 Gateway",
-      description: `${rmiTotal + mcpTotal} crypto security & intelligence tools via x402 micropayments. MCP tools/call support. DeFi security, scam detection, whale tracking, contract audits.`,
+      tagline: "Crypto Security & Intelligence \u2014 AI-Powered Scam Detection Since 2024",
+      description: `${rmiTotal + mcpTotal} production crypto security & intelligence tools. Deep contract audits, honeypot detection, whale tracking, rug pull prediction, MEV protection, wash trading analysis, arbitrage scanning, syndicate network mapping, clone detection, and 154 data provider integrations across 28 services. Built by a former teacher turned full-time scam investigator.`,
       version: "2.1.0",
+      build: (/* @__PURE__ */ new Date()).toISOString(),
+      // ── Networks ──
       gateway: env.GW_URL,
-      alternate_gateway: env.SOLANA_GATEWAY || env.GW_URL,
+      alternate_gateway: env.NETWORK.includes("solana") ? "https://base.rugmunch.io" : "https://sol.rugmunch.io",
       network: env.NETWORK,
       network_name: env.NETWORK_NAME,
-      stats: { rmi_tools: rmiTotal, mcp_tools: mcpTotal, total: rmiTotal + mcpTotal, categories: categories.length, services: Object.keys(allMcp).length },
+      // ── Stats ──
+      stats: {
+        rmi_tools: rmiTotal,
+        mcp_tools: mcpTotal,
+        total_tools: rmiTotal + mcpTotal,
+        categories: categories.length,
+        mcp_services: Object.keys(allMcp).length,
+        chains_supported: ["Solana", "Base", "Ethereum", "BSC"]
+      },
+      // ── All Endpoints ──
       endpoints: {
-        mcp: `${env.GW_URL}/mcp`,
-        mcp_docs: `${env.GW_URL}/mcp-x402-docs`,
-        tools_list: `${env.GW_URL}/mcp (POST tools/list)`,
-        tools_call: `${env.GW_URL}/mcp (POST tools/call)`,
-        rest: `${env.GW_URL}/tools/{tool_name}`,
+        mcp_protocol: `${env.GW_URL}/mcp`,
+        bot_docs: `${env.GW_URL}/mcp-x402-docs`,
+        agent_discovery: `${env.GW_URL}/llms.txt`,
+        payment_discovery: `${env.GW_URL}/.well-known/x402`,
         health: `${env.GW_URL}/health`,
-        discovery: `${env.GW_URL}/.well-known/x402`,
         frameworks: `${env.GW_URL}/frameworks`,
-        openai: `${env.GW_URL}/openai-tools`,
-        anthropic: `${env.GW_URL}/anthropic-tools`,
-        llms_txt: `${env.GW_URL}/llms.txt`,
-        pricing: `${env.GW_URL}/pricing`
+        openai_format: `${env.GW_URL}/openai-tools`,
+        anthropic_format: `${env.GW_URL}/anthropic-tools`,
+        gemini_format: `${env.GW_URL}/gemini-tools`,
+        langchain_format: `${env.GW_URL}/langchain-tools`,
+        rest_api: `${env.GW_URL}/tools/{tool_name}`,
+        pricing_page: `${env.GW_URL}/pricing`,
+        tip_jar: `${env.GW_URL}/tip`,
+        about: `${env.GW_URL}/about`
       },
+      // ── Pricing ──
       pricing: {
+        model: "Pay-per-call micropayments via x402 protocol",
         range: "$0.01 - $0.15 USDC per call",
-        trial_calls: "1-5 free per tool",
-        payment: "x402 protocol \u2014 USDC on Solana & Base",
-        human_payment: "sol.rugmunch.io | base.rugmunch.io \u2014 wallet connect, multi-token"
+        trial: "1-5 free calls per tool \u2014 no signup, no API key needed",
+        payment_methods_bots: "x402 protocol \u2014 USDC on Solana (EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v) & Base (0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913)",
+        payment_methods_humans: "Wallet Connect \u2014 MetaMask, WalletConnect, Coinbase Wallet, Phantom (Solana). Pay with USDC, SOL, ETH, USDT.",
+        refund_policy: "Auto-refund if tool execution fails \u2014 verified on-chain",
+        where_money_goes: "100% funds server costs + more anti-scam tools. Solo dev operation."
       },
+      // ── Quickstart ──
       quickstart: {
-        mcp_client: `npx -y mcp-remote@latest ${env.GW_URL}/mcp`,
+        mcp_client_30_seconds: `npx -y mcp-remote@latest ${env.GW_URL}/mcp`,
+        claude_desktop: {
+          config_file: "claude_desktop_config.json",
+          snippet: { mcpServers: { rmi: { command: "npx", args: ["-y", "mcp-remote@latest", `${env.GW_URL}/mcp`] } } }
+        },
+        cursor_ide: "Add to Cursor MCP settings \u2192 use endpoint URL directly",
         smithery: "https://smithery.ai/server/@cryptorugmunch/x402",
-        claude_config: `{ "mcpServers": { "rmi": { "command": "npx", "args": ["-y", "mcp-remote@latest", "${env.GW_URL}/mcp"] } } }`
+        glama: "https://glama.ai/mcp/servers/rugmunch",
+        curl_test: `curl -X POST ${env.GW_URL}/mcp -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"tools/list","params":{}}'`
       },
-      categories: Object.entries(
-        Object.values(RMI_TOOLS).reduce((acc, t) => {
-          (acc[t.category] = acc[t.category] || []).push(t.name);
-          return acc;
-        }, {})
-      ).map(([cat, tools]) => ({ category: cat, count: tools.length, tools })),
+      // ── Tool Categories ──
+      categories: catBreakdown,
+      // ── Trust & Transparency ──
+      trust: {
+        founder: "20-year teacher turned full-time crypto scam investigator. 2+ years exposing scams on X. Built this solo to protect retail investors.",
+        track_record: "2+ years of scam reporting. Thousands of scams exposed. Featured in crypto security communities.",
+        open_source: "https://github.com/Rug-Munch-Media-LLC/rugmuncher-backend \u2014 backend is public",
+        no_vc: "Bootstrapped. No VC funding. No token. Revenue from tool calls only.",
+        security: "No API keys stored. Payments verified on-chain. No user data collected beyond wallet addresses for trial tracking."
+      },
+      // ── Social & Community ──
       social: {
         twitter: "https://x.com/cryptorugmunch",
-        github: "https://github.com/Rug-Munch-Media-LLC/rugmuncher-backend",
+        twitter_handle: "@cryptorugmunch",
+        telegram_main: "https://t.me/cryptorugmunch",
+        telegram_alerts: "https://t.me/cryptorugmuncher",
+        telegram_alerts_description: "Scam alerts, independent analysis, commentary, and product updates",
+        github_org: "https://github.com/Rug-Munch-Media-LLC",
+        github_repo: "https://github.com/Rug-Munch-Media-LLC/rugmuncher-backend",
         website: "https://rugmunch.io",
-        docs: "https://rugmunch.io/docs"
+        email: "cryptorugmuncher@gmail.com"
       },
-      maintainer: { name: "Crypto Rug Muncher", role: "Solo dev on a mission to stop crypto scams" }
+      // ── MCP Services (28 data providers) ──
+      mcp_services: Object.entries(allMcp).map(([name, tools]) => ({
+        service: name,
+        tool_count: tools.length,
+        tier: tools[0]?.tier || "free"
+      })),
+      // ── Maintainer ──
+      maintainer: {
+        name: "Crypto Rug Muncher",
+        title: "Founder & Solo Developer \u2014 Rug Munch Media LLC",
+        mission: "Building AI tools to stop crypto scams and protect retail investors",
+        based: "United States",
+        since: 2026
+      }
     });
   }
   if (path === "/openai-tools") {
